@@ -28,6 +28,9 @@ class Config:
     LLM_API_KEY = os.environ.get('LLM_API_KEY')
     LLM_BASE_URL = os.environ.get('LLM_BASE_URL', 'https://api.openai.com/v1')
     LLM_MODEL_NAME = os.environ.get('LLM_MODEL_NAME', 'gpt-4o-mini')
+    # GLM-5.x 强制思考，思考强度 reasoning_effort: low/high/max（NIM 默认 max）
+    # max 会让大提示词推理 10 分钟以上并触发网关 504；换用不支持该参数的模型时删除此配置
+    LLM_REASONING_EFFORT = os.environ.get('LLM_REASONING_EFFORT')
     
     # Zep配置
     ZEP_API_KEY = os.environ.get('ZEP_API_KEY')

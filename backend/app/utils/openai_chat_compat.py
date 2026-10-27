@@ -25,6 +25,7 @@ def create_chat_completion(
     temperature: Optional[float] = None,
     max_tokens: Optional[int] = None,
     response_format: Optional[Dict[str, Any]] = None,
+    reasoning_effort: Optional[str] = None,
 ) -> Any:
     """
     Create a chat completion with model-specific request parameters.
@@ -32,6 +33,9 @@ def create_chat_completion(
     Compatibility strategy:
     - For GPT-5 family, avoid sending temperature by default.
     - For token limit, use `max_completion_tokens` on GPT-5, `max_tokens` otherwise.
+    - `reasoning_effort` bounds the forced thinking of GLM-5.x on NVIDIA NIM
+      (provider default 'max' reasons for 10+ minutes on large prompts and
+      trips the gateway's 504; 'low' completes in ~90s). Sent only when set.
     - Preserve the legacy request shape for every non-GPT-5 model/provider.
     - Propagate provider errors unchanged instead of guessing from message text.
     """
@@ -42,6 +46,9 @@ def create_chat_completion(
 
     if response_format is not None:
         kwargs["response_format"] = response_format
+
+    if reasoning_effort:
+        kwargs["extra_body"] = {"reasoning_effort": reasoning_effort}
 
     gpt5_family = is_gpt5_family(model)
 

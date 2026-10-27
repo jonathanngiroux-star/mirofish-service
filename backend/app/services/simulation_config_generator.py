@@ -232,6 +232,12 @@ class SimulationConfigGenerator:
         self.api_key = api_key or Config.LLM_API_KEY
         self.base_url = base_url or Config.LLM_BASE_URL
         self.model_name = model_name or Config.LLM_MODEL_NAME
+        # GLM-5.x forced thinking: NIM defaults to 'max' which reasons 10+
+        # minutes per call and trips the gateway 504; honor the configured
+        # effort (default 'low') so config generation completes quickly.
+        self.reasoning_effort = (
+            getattr(Config, "LLM_REASONING_EFFORT", None) or "low"
+        )
         
         if not self.api_key:
             raise ValueError("LLM_API_KEY 未配置")
@@ -450,6 +456,7 @@ class SimulationConfigGenerator:
                     ],
                     response_format={"type": "json_object"},
                     temperature=0.7 - (attempt * 0.1),  # 每次重试降低温度
+                    reasoning_effort=self.reasoning_effort,
                     # 不设置max_tokens，让LLM自由发挥
                 )
                 

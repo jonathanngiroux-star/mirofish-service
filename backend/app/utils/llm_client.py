@@ -95,11 +95,13 @@ class LLMClient:
         self,
         api_key: Optional[str] = None,
         base_url: Optional[str] = None,
-        model: Optional[str] = None
+        model: Optional[str] = None,
+        reasoning_effort: Optional[str] = None
     ):
         self.api_key = api_key or Config.LLM_API_KEY
         self.base_url = base_url or Config.LLM_BASE_URL
         self.model = model or Config.LLM_MODEL_NAME
+        self.reasoning_effort = reasoning_effort or Config.LLM_REASONING_EFFORT
         
         if not self.api_key:
             raise ValueError("LLM_API_KEY 未配置")
@@ -126,6 +128,7 @@ class LLMClient:
             temperature=temperature,
             max_tokens=max_tokens,
             response_format=response_format,
+            reasoning_effort=self.reasoning_effort,
         )
     
     def chat(
